@@ -48,7 +48,7 @@ button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white
       <p>継続的にこのEGO装着ツールを利用する場合は、入力したURLを控えておくのが賢明な判断です。<br>異なる人格編成を試すたびに再度所持状況を入力しなおすのは、面倒ですね。</p>
       <p>それだけでなく、所持状況に変更があっても、控えたURLに再度アクセスすることで、続きから入力できます。<br>ただし、所持状況が入力された状態のURLを開くと、デフォルトでは所持状況の入力がロックされています。<br>「強化段階の切り替え方法：」の横にあるボタンを押すことで、ロックを解除できます。</p>
     </details>
-    <input id="possessionUrl" type="text"><small>入力のない場合全EGO所持として計算します</small></div>
+    <input id="possessionUrl" type="text" placeholder="URLを入力"><small>入力のない場合全EGO所持として計算します</small></div>
   </div>
   <details class="help-details" style="margin-top:18px"><summary>各種補正</summary>
     <h3 style="margin-top:14px">補正：変化</h3>
@@ -546,7 +546,7 @@ function calculateFinalAttrs(groups,n){
   });
   const changes=readChangeValues();
   const changed=sum.map((x,i)=>x+changes[i]);
-  if(changed.some(x=>x<0))throw new Error("補正を変更してください");
+  if(changed.some(x=>x<0))throw new Error("入手資源量が負になっています。補正を変更してください");
   const total=changed.reduce((a,b)=>a+b,0);
   if(!(total>0))throw new Error("変化補正後の属性合計が0以下のため、正規化できません。補正を変更してください。");
   const normalized=changed.map(x=>x*42/total);
