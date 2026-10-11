@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGO装着ツール</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f3f3;color:#222}
+main{max-width:1500px;margin:auto}h1{font-size:25px;margin:0 0 16px}h2{font-size:20px;margin:22px 0 10px}h3{font-size:16px;margin:0 0 8px}
+.panel{background:#fff;border:1px solid #ccc;border-radius:10px;padding:16px;margin-bottom:14px}
+label{font-weight:600}input,textarea,button{font:inherit}input[type=text],input[type=number],textarea{width:100%;padding:9px;border:1px solid #aaa;border-radius:6px}
+textarea{min-height:72px;resize:vertical;font-family:ui-monospace,Consolas,monospace}
+button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white;cursor:pointer}button:hover{background:#eee}.primary{background:#c62828;color:#fff;border-color:#a91f1f;font-weight:700}.primary:hover{background:#a91f1f}a{color:#075bbb}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field small,.note{font-size:13px;color:#666}
+.attr-grid{display:grid;grid-template-columns:repeat(7,minmax(80px,1fr));gap:8px}.attr-box{border:1px solid #ddd;border-radius:7px;padding:8px;background:#fafafa}.attr-box label{display:block;margin-bottom:5px}
+.attr-pair{display:grid;grid-template-columns:1fr 1fr;gap:5px}.attr-pair input{min-width:0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}.status{white-space:pre-wrap;padding:10px;border:1px solid #ccc;border-radius:7px;background:#fafafa;margin:12px 0}.error{border-color:#d55;color:#a00}
+.identity-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0 20px}
+.identity-card{min-width:0;text-align:center;border:2px solid transparent;border-radius:8px;padding:6px;background:#fff}.identity-card.participant{border-color:#ef922b;box-shadow:0 0 0 1px #ef922b}.identity-card img{display:block;width:100%;max-width:180px;margin:auto}.identity-card .meta{font-size:13px;margin-top:4px}
+.sinner-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:14px 0}.sinner-tab{font-weight:600}.sinner-tab.active{background:#222;color:#fff}
+.ego-table-wrap{overflow-x:auto}.ego-table{width:100%;border-collapse:collapse;table-layout:fixed}.ego-table th,.ego-table td{border:1px solid #bbb;padding:6px;vertical-align:top}.ego-table th{background:#eee}.ego-table th:first-child{width:82px}.ego-cell{min-height:90px;display:flex;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;gap:5px}
+.ego-card{width:100%;max-width:180px;border:2px solid transparent;border-radius:5px;cursor:pointer;background:transparent}.ego-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px}.ego-card.selected{border-color:#ff9800;box-shadow:0 0 0 1px #ff9800}.ego-card .ego-label{font-size:12px;text-align:center;overflow-wrap:anywhere;padding:3px;white-space:pre-line}
+.rank-1{background:#e8f5e8}.rank-2{background:#eaf1fb}.rank-3{background:#fff8df}.rank-4{background:#f2eafa}.rank-5{background:#faeaea}
+.ego-table tr.rank-row-1 td{background:#f5fbf5}.ego-table tr.rank-row-2 td{background:#f5f8fd}.ego-table tr.rank-row-3 td{background:#fffdf5}.ego-table tr.rank-row-4 td{background:#faf7fd}.ego-table tr.rank-row-5 td{background:#fdf7f7}
+.intro{line-height:1.65;margin:0 0 12px}.help-details{margin:10px 0}.help-details summary{cursor:pointer;font-weight:600}.help-details p,.help-details li{line-height:1.6}.help-details ul{padding-left:1.4em}.correction-note{font-size:13px;color:#555;margin:5px 0 10px;line-height:1.55}.additional-frequency{display:flex;flex-direction:column;gap:4px}.additional-frequency .attr-pair{grid-template-columns:minmax(0,1fr) auto}.additional-frequency small{font-size:13px;color:#555}
+.hidden{display:none!important}.code-actions{display:grid;grid-template-columns:1fr auto;gap:8px}.muted{color:#666;font-size:13px}
+@media(max-width:850px){.attr-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.identity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){body{padding:8px}.panel{padding:10px}.form-grid{grid-template-columns:1fr}.attr-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.identity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main>
+<h1>EGO装着ツール</h1>
+<p class="intro">このツールでは、人格の編成コードとE.G.Oの所持状況を入力することで、発動しやすいE.G.Oが自動的に選択され、E.G.Oを装着した状態の編成コードを生成できます。</p>
+<details class="help-details"><summary>編成コードの発行方法</summary><p>採光などに入場し、編成順まで含めて人格を設定したあと、”ボタン画像”をクリックし、”編成コードをコピー”を選択してください。 “説明画像”</p></details>
+<details class="help-details"><summary>注意事項</summary><ul>
+<li>人格の所持資源やE.G.Oの必要資源などのデータは手入力で管理しているため、誤りが含まれている可能性があります。</li>
+<li>デフォルト設定では、基本攻撃スキルのみを使い続ける想定で計算します。そのため、さまざまな要因によって、発動不能と表示されたE.G.Oが実際には発動可能な場合があります。</li>
+<li>発動しやすさを優先して選択するため、必要資源の少ないE.G.Oが選ばれやすくなっています。最適な選択とは限らないため、各囚人のタブからE.G.Oを確認し、必要に応じて選択し直してください。</li>
+</ul></details>
+<section class="panel">
+  <div class="form-grid">
+    <div class="field"><label for="deckCode">編成コード</label><textarea id="deckCode" placeholder="編成コードを入力"></textarea></div>
+    <div class="field"><label for="participantCount">戦闘参加人数</label><input id="participantCount" type="number" min="1" max="12" value="7"></div>
+    <div class="field" style="grid-column:1/-1"><label for="possessionUrl">所持状況URL（<a href="https://394ast.github.io/limbus.sharetool/">limbus.sharetoolで発行</a>）</label><input id="possessionUrl" type="text"><small>入力のない場合全EGO所持として計算します</small></div>
+  </div>
+  <details class="help-details" style="margin-top:18px"><summary>各種補正</summary>
+    <h3 style="margin-top:14px">補正：変化</h3>
+    <p class="correction-note">守備スキルの使用などで属性が変化する場合、ここに入力してください</p>
+    <p class="correction-note">例えば、中指ウーティスを編成し、全てのスキル1を反撃に変化させるなら、色欲に-3、嫉妬に+3を入力してください</p>
+    <div id="changeInputs" class="attr-grid"></div>
+    <h3 style="margin-top:18px">補正：追加</h3>
+    <p class="correction-note">追撃などの要因で資源獲得が発生するなら、ここに頻度を入力してください</p>
+    <div id="additionalInputs" class="attr-grid"></div>
+  </details>
+  <div class="toolbar"><button class="primary" id="calculateBtn">入力した内容で計算する</button></div>
+  <div id="status" class="status">編成コードを入力してください。</div>
+</section>
+<section class="panel hidden" id="resultsPanel">
+  <h2>人格編成</h2>
+  <div id="identityGrid" class="identity-grid"></div>
+  <h2>EGO編成</h2>
+  <div class="muted">画像クリックで編成を変更できます。EGOは左から発動しやすい順に並んでいます。</div>
+  <div id="sinnerTabs" class="sinner-tabs"></div>
+  <div id="egoTableHost" class="ego-table-wrap"></div>
+  <h2>生成した編成コード</h2>
+  <div class="code-actions"><textarea id="generatedCode" readonly placeholder="EGOを選択すると編成コードが表示されます"></textarea><button id="copyCodeBtn">コピー</button></div>
+  <p class="muted">ゲーム内編成画面で”ボタン画像”をクリックし、”編成コードを読み込む”を選択してください。</p>
+  <div id="generationStatus" class="muted"></div>
+</section>
+</main>
+
+<script src="https://394ast.github.io/limbus.search/limbus-common.js"></script>
+<script>
+"use strict";
+// 各7値セットのビット幅。合計46bit × 12 = 552bit。
+const FIELD_WIDTHS = [7, 4, 7, 7, 7, 7, 7];
+const GROUPS = 12;
+const VALUE_COUNT = 84;
+const RAW_BYTE_LENGTH = 70;
+
+const LENGTH_BASE = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+const LENGTH_EXTRA = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+const DIST_BASE = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+const DIST_EXTRA = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+
+function maxForWidth(width) {
+  return (1 << width) - 1;
+}
+
+function parse84(text) {
+  const tokens = text.trim().split(/[\s,，、]+/).filter(Boolean);
+  if (tokens.length !== VALUE_COUNT) {
+    throw new Error(`整数は84個必要です。現在 ${tokens.length} 個です。`);
+  }
+
+  const values = tokens.map((token, index) => {
+    if (!/^\d+$/.test(token)) {
+      throw new Error(`${index + 1}番目が整数ではありません: ${token}`);
+    }
+    const value = Number(token);
+    const width = FIELD_WIDTHS[index % FIELD_WIDTHS.length];
+    const max = maxForWidth(width);
+    if (!Number.isSafeInteger(value) || value < 0 || value > max) {
+      throw new Error(`${index + 1}番目の値 ${token} は ${width}bit の範囲 0～${max} を超えています。`);
+    }
+    return value;
+  });
+  return values;
+}
+
+function setBit(bytes, bitPos, bit) {
+  const byteIndex = Math.floor(bitPos / 8);
+  const shift = 7 - (bitPos % 8);
+  if (bit) bytes[byteIndex] |= (1 << shift);
+}
+
+function getBit(bytes, bitPos) {
+  const byteIndex = Math.floor(bitPos / 8);
+  const shift = 7 - (bitPos % 8);
+  return (bytes[byteIndex] >> shift) & 1;
+}
+
+function pack84(values) {
+  const bytes = new Uint8Array(RAW_BYTE_LENGTH);
+  let bitPos = 1; // 先頭1bitは0
+
+  for (let i = 0; i < VALUE_COUNT; i++) {
+    const width = FIELD_WIDTHS[i % FIELD_WIDTHS.length];
+    const value = values[i];
+    for (let b = width - 1; b >= 0; b--) {
+      setBit(bytes, bitPos++, (value >> b) & 1);
+    }
+  }
+
+  // bitPos は559まで進む。残り7bitは0のまま。
+  if (bitPos !== 553) {
+    throw new Error(`内部エラー: bit位置が想定外です (${bitPos})`);
+  }
+  return bytes;
+}
+
+function unpack70(bytes) {
+  if (bytes.length !== RAW_BYTE_LENGTH) {
+    throw new Error(`中間データは70バイトである必要があります。現在 ${bytes.length} バイトです。`);
+  }
+  if (getBit(bytes, 0) !== 0) {
+    throw new Error("先頭のパディングbitが0ではありません。");
+  }
+  for (let p = 553; p < 560; p++) {
+    if (getBit(bytes, p) !== 0) {
+      throw new Error("末尾のパディング7bitが0ではありません。");
+    }
+  }
+
+  const values = [];
+  let bitPos = 1;
+  for (let i = 0; i < VALUE_COUNT; i++) {
+    const width = FIELD_WIDTHS[i % FIELD_WIDTHS.length];
+    let value = 0;
+    for (let b = width - 1; b >= 0; b--) {
+      value |= getBit(bytes, bitPos++) << b;
+    }
+    values.push(value);
+  }
+  return values;
+}
+
+function bytesToBase64(bytes) {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(text) {
+  let normalized = text.trim();
+  if (!normalized) throw new Error("文字列が空です。");
+  // URL等から来た場合も扱えるようにする。
+  normalized = normalized.replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
+  while (normalized.length % 4 !== 0) normalized += "=";
+  let binary;
+  try {
+    binary = atob(normalized);
+  } catch {
+    throw new Error("Base64として解釈できません。");
+  }
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+function utf8Encode(text) {
+  return new TextEncoder().encode(text);
+}
+
+function utf8Decode(bytes) {
+  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+}
+
+function reverseBits(value, count) {
+  let result = 0;
+  for (let i = 0; i < count; i++) {
+    result = (result << 1) | ((value >> i) & 1);
+  }
+  return result;
+}
+
+class BitWriter {
+  constructor() {
+    this.bytes = [];
+    this.buffer = 0;
+    this.count = 0;
+  }
+
+  writeBits(value, count) {
+    if (count === 0) return;
+    const mask = count === 32 ? 0xffffffff : (2 ** count) - 1;
+    this.buffer |= (value & mask) * (2 ** this.count);
+    this.count += count;
+
+    while (this.count >= 8) {
+      this.bytes.push(this.buffer & 0xff);
+      this.buffer = Math.floor(this.buffer / 256);
+      this.count -= 8;
+    }
+  }
+
+  finish() {
+    if (this.count > 0) this.bytes.push(this.buffer & 0xff);
+    return new Uint8Array(this.bytes);
+  }
+}
+
+// RFC 1951の固定ハフマン表。
+function fixedLiteralCode(symbol) {
+  if (symbol <= 143) return { code: 0x30 + symbol, bits: 8 };
+  if (symbol <= 255) return { code: 0x190 + (symbol - 144), bits: 9 };
+  if (symbol <= 279) return { code: symbol - 256, bits: 7 };
+  return { code: 0xc0 + (symbol - 280), bits: 8 };
+}
+
+function emitFixedLiteral(writer, symbol) {
+  const h = fixedLiteralCode(symbol);
+  writer.writeBits(reverseBits(h.code, h.bits), h.bits);
+}
+
+function findLengthSymbol(length) {
+  for (let i = LENGTH_BASE.length - 1; i >= 0; i--) {
+    if (length >= LENGTH_BASE[i]) return 257 + i;
+  }
+  throw new Error("不正な一致長");
+}
+
+function findDistanceSymbol(distance) {
+  for (let i = DIST_BASE.length - 1; i >= 0; i--) {
+    if (distance >= DIST_BASE[i]) return i;
+  }
+  throw new Error("不正な距離");
+}
+
+// 短い96バイトの入力なので、単純な貪欲法で十分です。
+// 同じ長さなら、より近い距離（最初に見つかったもの）を使います。
+function makeLz77Tokens(input) {
+  const tokens = [];
+  let pos = 0;
+
+  while (pos < input.length) {
+    let bestLength = 0;
+    let bestDistance = 0;
+    const maxDistance = Math.min(pos, 32768);
+
+    for (let distance = 1; distance <= maxDistance; distance++) {
+      if (input[pos] !== input[pos - distance]) continue;
+
+      let length = 0;
+      while (
+        length < 258 &&
+        pos + length < input.length &&
+        input[pos + length] === input[pos - distance + length]
+      ) {
+        length++;
+      }
+
+      if (length >= 3 && length > bestLength) {
+        bestLength = length;
+        bestDistance = distance;
+      }
+    }
+
+    if (bestLength >= 3) {
+      tokens.push({ type: "match", length: bestLength, distance: bestDistance });
+      pos += bestLength;
+    } else {
+      tokens.push({ type: "literal", value: input[pos] });
+      pos++;
+    }
+  }
+  return tokens;
+}
+
+function deflateFixed(input) {
+  const writer = new BitWriter();
+
+  // BFINAL=1, BTYPE=01（固定ハフマン）
+  writer.writeBits(1, 1);
+  writer.writeBits(1, 2);
+
+  const tokens = makeLz77Tokens(input);
+  for (const token of tokens) {
+    if (token.type === "literal") {
+      emitFixedLiteral(writer, token.value);
+      continue;
+    }
+
+    const lengthSymbol = findLengthSymbol(token.length);
+    const lengthIndex = lengthSymbol - 257;
+    emitFixedLiteral(writer, lengthSymbol);
+    writer.writeBits(token.length - LENGTH_BASE[lengthIndex], LENGTH_EXTRA[lengthIndex]);
+
+    const distanceSymbol = findDistanceSymbol(token.distance);
+    writer.writeBits(reverseBits(distanceSymbol, 5), 5);
+    writer.writeBits(token.distance - DIST_BASE[distanceSymbol], DIST_EXTRA[distanceSymbol]);
+  }
+
+  // End-of-block
+  emitFixedLiteral(writer, 256);
+  return writer.finish();
+}
+
+function crc32(bytes) {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let i = 0; i < 8; i++) {
+      crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function writeU32LE(value) {
+  return new Uint8Array([
+    value & 0xff,
+    (value >>> 8) & 0xff,
+    (value >>> 16) & 0xff,
+    (value >>> 24) & 0xff
+  ]);
+}
+
+function makeGzip(deflateBytes, originalBytes) {
+  // MTIME=0, XFL=0, OS=10。既知の出力と合わせるためOSは10。
+  const header = new Uint8Array([0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a]);
+  const trailer = new Uint8Array(8);
+  trailer.set(writeU32LE(crc32(originalBytes)), 0);
+  trailer.set(writeU32LE(originalBytes.length >>> 0), 4);
+
+  const result = new Uint8Array(header.length + deflateBytes.length + trailer.length);
+  result.set(header, 0);
+  result.set(deflateBytes, header.length);
+  result.set(trailer, header.length + deflateBytes.length);
+  return result;
+}
+
+function encodeValuesToString(values) {
+  const raw70 = pack84(values);
+  const innerBase64 = bytesToBase64(raw70);
+  const innerBytes = utf8Encode(innerBase64);
+  const deflate = deflateFixed(innerBytes);
+  const gzip = makeGzip(deflate, innerBytes);
+  return bytesToBase64(gzip);
+}
+
+async function ungzip(bytes) {
+  if (typeof DecompressionStream === "undefined") {
+    throw new Error("このブラウザはDecompressionStreamに対応していません。Edge/Chromeの新しい版を使用してください。");
+  }
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+  const buffer = await new Response(stream).arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+async function decodeStringToValues(text) {
+  const gzip = base64ToBytes(text);
+  if (gzip.length < 18) throw new Error("gzipデータが短すぎます。");
+  if (gzip[0] !== 0x1f || gzip[1] !== 0x8b || gzip[2] !== 0x08) {
+    throw new Error("gzip形式ではありません。");
+  }
+
+  // DecompressionStream側でCRC/ISIZEも検証されます。
+  const innerBytes = await ungzip(gzip);
+  const innerBase64 = utf8Decode(innerBytes);
+  const raw70 = base64ToBytes(innerBase64);
+  return unpack70(raw70);
+}
+
+function formatValues(values) {
+  return values.join(",");
+}
+
+
+
+
+const CSV_URLS = {
+  identity: "https://raw.githubusercontent.com/394ast/limbus.search/main/Limbus%20data%20-%20Identity.csv",
+  ego: "https://raw.githubusercontent.com/394ast/limbus.search/main/Limbus%20data%20-%20EGO.csv"
+};
+const ATTRS = ["憤怒","色欲","怠惰","暴食","憂鬱","傲慢","嫉妬"];
+const SINNERS = ["イサン","ファウスト","ドンキホーテ","良秀","ムルソー","ホンル","ヒースクリフ","イシュメール","ロージャ","シンクレア","ウーティス","グレゴール"];
+const RANKS = {1:"ZAYIN",2:"TETH",3:"HE",4:"WAW",5:"ALEPH"};
+const IDENTITY_IMAGE_BASE = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
+const EGO_IMAGE_BASE = "https://raw.githubusercontent.com/394ast/limbus.sharetool/main/";
+let identityRows=[], egoRows=[], identityById=new Map(), egoById=new Map();
+let restoredGroups=[], finalAttrs=[], ownedEgoIds=new Set(), activeSinner=0, selectedEgoBySinner=Array.from({length:12},()=>new Map());
+
+function parseCsv(text){
+  const rows=[];let row=[],field="",quoted=false;
+  text=text.replace(/^\uFEFF/,"");
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'){if(quoted&&n==='"'){field+='"';i++;}else quoted=!quoted;}
+    else if(c===","&&!quoted){row.push(field);field="";}
+    else if((c==="\n"||c==="\r")&&!quoted){if(c==="\r"&&n==="\n")i++;row.push(field);if(row.some(x=>x!==""))rows.push(row);row=[];field="";}
+    else field+=c;
+  }
+  if(field!==""||row.length){row.push(field);if(row.some(x=>x!==""))rows.push(row);}
+  if(!rows.length)return [];
+  const headers=rows[0].map(x=>x.trim());
+  return rows.slice(1).map(values=>Object.fromEntries(headers.map((h,i)=>[h,(values[i]??"").trim()])));
+}
+async function loadCsv(url){const r=await fetch(url);if(!r.ok)throw new Error("CSV取得失敗: "+r.status+" "+url);return parseCsv(await r.text());}
+function identityImage(id){return `${IDENTITY_IMAGE_BASE}Identities.After/${id}.3.jpg`;}
+function egoImage(id,selected){return `${EGO_IMAGE_BASE}${selected?"EGO":"EGO.Mono"}/${id}${selected?"":".mono"}.jpg`;}
+function makeImg(src,alt){const img=document.createElement("img");img.src=src;img.alt=alt;img.loading="lazy";return img;}
+function attrValue(row,key,identity=false){const raw=Number(row[key]??0);return identity&&raw===9?0:(Number.isFinite(raw)?raw:0);}
+function readChangeValues(){return ATTRS.map((_,i)=>Number(document.getElementById("change-"+i).value||0));}
+function readAdditionalValues(){
+  return ATTRS.map((_,i)=>{
+    const turns=Number(document.getElementById("turns-"+i).value||0);
+    const count=Number(document.getElementById("count-"+i).value||0);
+    if(!Number.isFinite(turns)||!Number.isFinite(count)||turns<0||count<0)throw new Error("追加のターン数・回数は0以上で入力してください。");
+    if(turns===0&&count!==0)throw new Error("追加のターン数が0の場合、回数も0にしてください。");
+    return turns===0?0:count/turns;
+  });
+}
+function buildCorrectionInputs(){
+  const change=document.getElementById("changeInputs"),additional=document.getElementById("additionalInputs");
+  ATTRS.forEach((name,i)=>{
+    const a=document.createElement("div");a.className="attr-box";
+    a.innerHTML=`<label>${name}</label><input id="change-${i}" type="number" step="any" value="0" aria-label="${name}の変化">`;
+    change.append(a);
+    const b=document.createElement("div");b.className="attr-box";
+    b.innerHTML=`<label>${name}</label><div class="additional-frequency"><div class="attr-pair"><input id="turns-${i}" type="number" min="0" step="any" value="0" aria-label="${name}のターン数" title="ターン数"><span>ごとに</span></div><div class="attr-pair"><input id="count-${i}" type="number" min="0" step="any" value="0" aria-label="${name}の回数" title="回数"><span>回</span></div></div>`;
+    additional.append(b);
+  });
+}
+function setStatus(message,error=false){const el=document.getElementById("status");el.textContent=message;el.classList.toggle("error",error);}
+function decodePossessionUrl(text,common){
+  let url;
+  try{url=new URL(text.trim());}catch{throw new Error("所持状況URLが正しくありません。");}
+  const imgParam=url.searchParams.get("img");
+  if(!imgParam)throw new Error("所持状況URLにimgパラメータがありません。");
+  if(typeof decompressLimbusImgData!=="function"||typeof parseLimbusImgParam!=="function"){
+    throw new Error("limbus-common.jsの読み込みに失敗しました。");
+  }
+  if(!common||!Array.isArray(common.namelistData)||!Array.isArray(common.groupsData)){
+    throw new Error("所持状況のCSVデータを読み込めませんでした。");
+  }
+
+  const parsed=parseLimbusImgParam(imgParam);
+  const states=decompressLimbusImgData(parsed.encodedImgData,common.groupsData,parsed.codingDiffId);
+  const byId=new Map();
+  let stateOffset=0;
+
+  // CSV上のIDをグループごとに並べ、各グループの状態配列をそのIDへ対応付ける。
+  // これにより、グループごとのEGO件数が増減しても、後続グループの位置がずれない。
+  for(const group of common.groupsData){
+    const groupNumber=Number(group.groupNumber);
+    // 所持判定の対象はEGOのグループ13～24のみ。
+    // ただし復元配列内の位置を合わせるため、人格グループ1～12の件数分は読み飛ばす。
+    if(groupNumber<13){
+      stateOffset+=Number(group.groupCount);
+      continue;
+    }
+    const groupRows=common.namelistData
+      .filter(item=>Math.floor(Number(item.id)/1000)===groupNumber)
+      .sort((a,b)=>Number(a.id)-Number(b.id));
+    if(groupRows.length!==Number(group.groupCount)){
+      throw new Error(`グループ${groupNumber}のCSV件数が一致しません。`);
+    }
+    groupRows.forEach((item,index)=>{
+      byId.set(Number(item.id),Number(states[stateOffset+index]??0));
+    });
+    stateOffset+=Number(group.groupCount);
+  }
+  if(stateOffset>states.length){
+    throw new Error("所持状況URLの状態データが不足しています。");
+  }
+  return byId;
+}
+function restoreDeck(values){
+  if(values.length!==84)throw new Error("編成コードは84個の整数に復元される必要があります。");
+  const groups=[];
+  for(let i=0;i<12;i++){
+    const v=values.slice(i*7,i*7+7);
+    const identityId=(i+1)*1000+v[0];
+    if(!identityById.has(identityId))throw new Error(`${SINNERSafe(i)}の人格IDがCSVに存在しません: ${identityId}`);
+    const egos=[];
+    for(let rank=1;rank<=5;rank++){
+      const low=v[rank+1],id=(i+13)*1000+low;
+      if(low!==0&&(!egoById.has(id)||Number(egoById.get(id).rank)!==rank))throw new Error(`${SINNERSafe(i)}の${RANKS[rank]} EGO IDがCSVに存在しません: ${id}`);
+      egos.push(low===0?null:id);
+    }
+    groups.push({sinnerIndex:i,identityId,order:v[1],egos});
+  }
+  return groups;
+}
+function SINNERSafe(i){return SINNERS[i]||`囚人${i+1}`;}
+function validateOrders(groups,n){
+  if(!Number.isInteger(n)||n<1||n>12)throw new Error("戦闘参加人数は1～12の整数で入力してください。");
+  const orders=groups.map(g=>g.order);
+  // 編成順は0（未設定）または1～12。戦闘参加人数がn人でも、
+  // n人目以降の控え人格に13未満の編成順が設定されていることは許可する。
+  const nonZeroOrders=orders.filter(x=>x!==0);
+  const target=orders.filter(x=>x>=1&&x<=n);
+  const inRange=orders.every(x=>Number.isInteger(x)&&(x===0||(x>=1&&x<=12)));
+  const unique= new Set(nonZeroOrders).size===nonZeroOrders.length;
+  const hasAllParticipants=Array.from({length:n},(_,i)=>i+1).every(x=>target.includes(x));
+  if(!inRange||!unique||target.length!==n||!hasAllParticipants){
+    throw new Error(`編成順が正しくありません。戦闘参加人数=${n}人の場合、編成順1～${n}をそれぞれ1人ずつ設定してください。編成順は0または1～12で、重複できません。現在の編成順：${orders.join(", ")}`);
+  }
+}
+function calculateFinalAttrs(groups,n){
+  const sum=Array(7).fill(0);
+  groups.filter(g=>g.order>=1&&g.order<=n).forEach(g=>{
+    const row=identityById.get(g.identityId);
+    ATTRS.forEach((a,i)=>sum[i]+=attrValue(row,a,true));
+  });
+  const changes=readChangeValues();
+  const changed=sum.map((x,i)=>x+changes[i]);
+  if(changed.some(x=>x<0))throw new Error("補正を変更してください");
+  const total=changed.reduce((a,b)=>a+b,0);
+  if(!(total>0))throw new Error("変化補正後の属性合計が0以下のため、正規化できません。補正を変更してください。");
+  const normalized=changed.map(x=>x*42/total);
+  const additional=readAdditionalValues();
+  return normalized.map((x,i)=>x+additional[i]*(42/n));
+}
+function classifyEgo(row,finalValues){
+  const requirements=ATTRS.map(a=>attrValue(row,a,false));
+  const diffs=finalValues.map((x,i)=>x-requirements[i]);
+  const impossible=requirements.some((x,i)=>x>0&&finalValues[i]===0);
+  const minDiff=Math.min(...diffs);
+  const requirementSum=requirements.reduce((a,b)=>a+b,0);
+  let category;
+  if(impossible)category="発動不能";
+  else if(diffs.every(x=>x>0))category="発動可能";
+  else category="発動困難";
+  return {category,minDiff,requirementSum,id:Number(row.id)};
+}
+function renderIdentities(groups,n){
+  const root=document.getElementById("identityGrid");root.innerHTML="";
+  groups.forEach(g=>{
+    const card=document.createElement("div");card.className="identity-card"+(g.order>=1&&g.order<=n?" participant":"");
+    card.append(makeImg(identityImage(g.identityId),String(g.identityId)));
+    const meta=document.createElement("div");meta.className="meta";meta.textContent=`${identityById.get(g.identityId)?.name1||String(g.identityId)}\n（編成順 ${g.order}）`;
+    card.append(meta);root.append(card);
+  });
+}
+function buildEgoSelections(){
+  selectedEgoBySinner=Array.from({length:12},()=>new Map());
+  const categoryOrder={"発動可能":0,"発動困難":1,"発動不能":2};
+  for(let sinnerIndex=0;sinnerIndex<12;sinnerIndex++){
+    const owned=getOwnedEgosForSinner(sinnerIndex);
+    for(let rank=1;rank<=5;rank++){
+      // 表の左側の分類を優先し、分類内では表示順（compareEgos）で先頭のEGOを選択する。
+      const first=owned
+        .filter(row=>Number(row.rank)===rank)
+        .sort((a,b)=>categoryOrder[a._sort.category]-categoryOrder[b._sort.category]||compareEgos(a,b))[0];
+      if(first)selectedEgoBySinner[sinnerIndex].set(rank,Number(first.id));
+    }
+  }
+}
+function getOwnedEgosForSinner(index){
+  const base=(index+13)*1000;
+  return egoRows.filter(row=>{
+    const id=Number(row.id);
+    return Math.floor(id/1000)===index+13&&ownedEgoIds.has(id);
+  }).map(row=>({...row,_sort:classifyEgo(row,finalAttrs)}));
+}
+function compareEgos(a,b){
+  const x=a._sort,y=b._sort;
+  return y.minDiff-x.minDiff||y.requirementSum-x.requirementSum||x.id-y.id;
+}
+function renderTabs(){
+  const root=document.getElementById("sinnerTabs");root.innerHTML="";
+  SINNERS.forEach((name,i)=>{
+    const btn=document.createElement("button");btn.className="sinner-tab"+(i===activeSinner?" active":"");btn.textContent=name;
+    btn.addEventListener("click",()=>{activeSinner=i;renderTabs();renderEgoTable();});
+    root.append(btn);
+  });
+}
+function renderEgoTable(){
+  const host=document.getElementById("egoTableHost");host.innerHTML="";
+  const table=document.createElement("table");table.className="ego-table";
+  const thead=document.createElement("thead"),tr=document.createElement("tr");
+  ["ランク","発動可能","発動困難","発動不能"].forEach(t=>{const th=document.createElement("th");th.textContent=t;tr.append(th);});thead.append(tr);table.append(thead);
+  const body=document.createElement("tbody");
+  const owned=getOwnedEgosForSinner(activeSinner);
+  for(let rank=1;rank<=5;rank++){
+    const tr=document.createElement("tr"),th=document.createElement("th");tr.className=`rank-row-${rank}`;th.className=`rank-${rank}`;th.textContent=RANKS[rank];tr.append(th);
+    for(const category of ["発動可能","発動困難","発動不能"]){
+      const td=document.createElement("td"),cell=document.createElement("div");cell.className="ego-cell";
+      owned.filter(row=>Number(row.rank)===rank&&row._sort.category===category).sort(compareEgos).forEach(row=>{
+        const id=Number(row.id),selected=selectedEgoBySinner[activeSinner].get(rank)===id;
+        const card=document.createElement("div");card.className="ego-card"+(selected?" selected":"");card.title=`ID ${id} / min差分 ${row._sort.minDiff} / 必要値合計 ${row._sort.requirementSum}`;
+        const img=makeImg(egoImage(id,selected),`${row.name1||""} ${row.name2||""} ${id}`);card.append(img);
+        const label=document.createElement("div");label.className="ego-label";label.textContent=row.name1||String(id);card.append(label);
+        card.addEventListener("click",()=>toggleEgo(activeSinner,rank,id));
+        cell.append(card);
+      });
+      td.append(cell);tr.append(td);
+    }
+    body.append(tr);
+  }
+  table.append(body);host.append(table);
+}
+function toggleEgo(sinner,rank,id){
+  const selected=selectedEgoBySinner[sinner];
+  if(selected.get(rank)===id){
+    if(rank===1){document.getElementById("generationStatus").textContent="ZAYINは1つ選択してください。";return;}
+    selected.delete(rank);
+  }else selected.set(rank,id);
+  renderEgoTable();generateOutputCode();
+}
+function generateOutputCode(){
+  try{
+    const values=[];
+    restoredGroups.forEach(g=>{
+      values.push(g.identityId%100,g.order);
+      for(let rank=1;rank<=5;rank++){
+        const id=selectedEgoBySinner[g.sinnerIndex].get(rank)||0;
+        values.push(id?id%100:0);
+      }
+    });
+    const code=encodeValuesToString(values);
+    document.getElementById("generatedCode").value=code;
+    document.getElementById("generationStatus").textContent="選択内容を編成コードに反映しました。";
+  }catch(e){document.getElementById("generationStatus").textContent=e.message;}
+}
+async function runCalculation(){
+  const button=document.getElementById("calculateBtn");button.disabled=true;
+  try{
+    setStatus("CSVと所持状況を読み込み中...");
+    const possessionUrl=document.getElementById("possessionUrl").value.trim();
+    const [values,identities,egos]=await Promise.all([
+      decodeStringToValues(document.getElementById("deckCode").value.trim()),
+      loadCsv(CSV_URLS.identity),
+      loadCsv(CSV_URLS.ego)
+    ]);
+    identityRows=identities.filter(r=>/^\d+$/.test(r.id)&&Number(r.id)>=1000&&Number(r.id)<13000);
+    egoRows=egos.filter(r=>/^\d+$/.test(r.id)&&Number(r.id)>=13000&&Number(r.id)<25000&&/^[1-5]$/.test(r.rank));
+    identityById=new Map(identityRows.map(r=>[Number(r.id),r]));egoById=new Map(egoRows.map(r=>[Number(r.id),r]));
+    restoredGroups=restoreDeck(values);
+    const n=Number(document.getElementById("participantCount").value);
+    validateOrders(restoredGroups,n);
+    if(possessionUrl){
+      const common=await loadLimbusCommonData();
+      const possession=decodePossessionUrl(possessionUrl,common);
+      ownedEgoIds=new Set(egoRows.filter(row=>(possession.get(Number(row.id))||0)>0).map(row=>Number(row.id)));
+    }else{
+      ownedEgoIds=new Set(egoRows.map(row=>Number(row.id)));
+    }
+    finalAttrs=calculateFinalAttrs(restoredGroups,n);
+    // 計算結果の初期表示では、囚人・ランクごとに表の左端（最も発動しやすい）EGOを選択する。
+    buildEgoSelections();
+    renderIdentities(restoredGroups,n);activeSinner=0;renderTabs();renderEgoTable();generateOutputCode();
+    document.getElementById("resultsPanel").classList.remove("hidden");
+    setStatus(`編成コードを復元し、属性計算と所持EGOの分類が完了しました。\n${possessionUrl?`所持判定：${ownedEgoIds.size} / ${egoRows.length} 件のEGOを所持と判定しました。`:`所持状況URLが未入力のため、全EGOを所持しているものとして計算しました。`}`);
+  }catch(e){
+    document.getElementById("resultsPanel").classList.add("hidden");
+    setStatus(e.message||String(e),true);
+  }finally{button.disabled=false;}
+}
+document.getElementById("calculateBtn").addEventListener("click",runCalculation);
+document.getElementById("copyCodeBtn").addEventListener("click",async()=>{
+  const code=document.getElementById("generatedCode").value;if(!code){document.getElementById("generationStatus").textContent="先に編成コードを生成してください。";return;}
+  try{await navigator.clipboard.writeText(code);document.getElementById("generationStatus").textContent="編成コードをコピーしました。";}
+  catch{document.getElementById("generationStatus").textContent="コピーできませんでした。コードを手動でコピーしてください。";}
+});
+buildCorrectionInputs();
+</script>
+</body>
+</html>
