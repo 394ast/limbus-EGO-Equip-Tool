@@ -18,11 +18,11 @@ button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white
 .identity-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0 20px}
 .identity-card{min-width:0;text-align:center;border:2px solid transparent;border-radius:8px;padding:6px;background:#fff}.identity-card.participant{border-color:#ef922b;box-shadow:0 0 0 1px #ef922b}.identity-card img{display:block;width:100%;max-width:180px;margin:auto}.identity-card .meta{font-size:13px;margin-top:4px}
 .sinner-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:14px 0}.sinner-tab{font-weight:600}.sinner-tab.active{background:#222;color:#fff}
-.ego-table-wrap{overflow-x:auto}.ego-table{width:100%;border-collapse:collapse;table-layout:fixed}.ego-table th,.ego-table td{border:1px solid #bbb;padding:6px;vertical-align:top}.ego-table th{background:#eee}.ego-table th:first-child{width:82px}.ego-cell{min-height:90px;display:flex;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;gap:5px}
-.ego-card{width:100%;max-width:180px;border:2px solid transparent;border-radius:5px;cursor:pointer;background:transparent}.ego-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px}.ego-card.selected{border-color:#ff9800;box-shadow:0 0 0 1px #ff9800}.ego-card .ego-label{font-size:12px;text-align:center;overflow-wrap:anywhere;padding:3px;white-space:pre-line}
+.ego-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}.ego-table{width:max-content;min-width:100%;border-collapse:collapse;table-layout:auto}.ego-table th,.ego-table td{border:1px solid #bbb;padding:4px;vertical-align:top}.ego-table th{background:#eee;white-space:nowrap}.ego-table th:first-child{width:72px;min-width:72px}.ego-cell{min-height:0;display:flex;align-items:flex-start;flex-wrap:nowrap;gap:5px;width:max-content;min-width:0}
+.ego-card{flex:0 0 180px;width:180px;border:5px solid transparent;border-radius:5px;cursor:pointer;background:transparent}.ego-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}.ego-card.selected{border-color:#ff9800;box-shadow:0 0 0 2px #ff9800}.ego-card .ego-label{font-size:12px;text-align:center;overflow-wrap:anywhere;padding:3px;white-space:pre-line}
 .rank-1{background:#e8f5e8}.rank-2{background:#eaf1fb}.rank-3{background:#fff8df}.rank-4{background:#f2eafa}.rank-5{background:#faeaea}
 .ego-table tr.rank-row-1 td{background:#f5fbf5}.ego-table tr.rank-row-2 td{background:#f5f8fd}.ego-table tr.rank-row-3 td{background:#fffdf5}.ego-table tr.rank-row-4 td{background:#faf7fd}.ego-table tr.rank-row-5 td{background:#fdf7f7}
-.intro{line-height:1.65;margin:0 0 12px}.help-details{margin:10px 0}.help-details summary{cursor:pointer;font-weight:600}.help-details p,.help-details li{line-height:1.6}.help-details ul{padding-left:1.4em}.correction-note{font-size:13px;color:#555;margin:5px 0 10px;line-height:1.55}.additional-frequency{display:flex;flex-direction:column;gap:4px}.additional-frequency .attr-pair{grid-template-columns:minmax(0,1fr) auto}.additional-frequency small{font-size:13px;color:#555}
+.intro{line-height:1.65;margin:0 0 12px}.help-details{margin:10px 0}.help-details summary{cursor:pointer;font-weight:600}.help-details p,.help-details li{line-height:1.6}.tips-details{grid-column:1/-1;margin-top:4px}.instruction-button-image{height:30px;width:auto;max-width:100%;vertical-align:middle;object-fit:contain}.instruction-explanation-image{display:block;width:auto;max-width:100%;height:auto;margin-top:10px;border:1px solid #ddd;border-radius:5px}.help-details ul{padding-left:1.4em}.correction-note{font-size:13px;color:#555;margin:5px 0 10px;line-height:1.55}.additional-frequency{display:flex;flex-direction:column;gap:4px}.additional-frequency .attr-pair{grid-template-columns:minmax(0,1fr) auto}.additional-frequency small{font-size:13px;color:#555}
 .hidden{display:none!important}.code-actions{display:grid;grid-template-columns:1fr auto;gap:8px}.muted{color:#666;font-size:13px}
 @media(max-width:850px){.attr-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.identity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){body{padding:8px}.panel{padding:10px}.form-grid{grid-template-columns:1fr}.attr-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.identity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -32,7 +32,7 @@ button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white
 <main>
 <h1>EGO装着ツール</h1>
 <p class="intro">このツールでは、人格の編成コードとE.G.Oの所持状況を入力することで、発動しやすいE.G.Oが自動的に選択され、E.G.Oを装着した状態の編成コードを生成できます。</p>
-<details class="help-details"><summary>編成コードの発行方法</summary><p>採光などに入場し、編成順まで含めて人格を設定したあと、”ボタン画像”をクリックし、”編成コードをコピー”を選択してください。 “説明画像”</p></details>
+<details class="help-details"><summary>編成コードの発行方法</summary><p>採光などに入場し、編成順まで含めて人格を設定したあと、<img class="instruction-button-image" src="https://raw.githubusercontent.com/394ast/limbus-EGO-Equip-Tool/main/Identities.After/Formation%20code%20button.png" alt="ボタン画像">をクリックし、「編成コードをコピー」を選択してください。</p><img class="instruction-explanation-image" src="https://raw.githubusercontent.com/394ast/limbus-EGO-Equip-Tool/main/Identities.After/Illustration%20for%20explanation.png.png" alt="編成コードの発行方法の説明画像" loading="lazy"></details>
 <details class="help-details"><summary>注意事項</summary><ul>
 <li>人格の所持資源やE.G.Oの必要資源などのデータは手入力で管理しているため、誤りが含まれている可能性があります。</li>
 <li>デフォルト設定では、基本攻撃スキルのみを使い続ける想定で計算します。そのため、さまざまな要因によって、発動不能と表示されたE.G.Oが実際には発動可能な場合があります。</li>
@@ -43,6 +43,11 @@ button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white
     <div class="field"><label for="deckCode">編成コード</label><textarea id="deckCode" placeholder="編成コードを入力"></textarea></div>
     <div class="field"><label for="participantCount">戦闘参加人数</label><input id="participantCount" type="number" min="1" max="12" value="7"></div>
     <div class="field" style="grid-column:1/-1"><label for="possessionUrl">所持状況URL（<a href="https://394ast.github.io/limbus.sharetool/">limbus.sharetoolで発行</a>）</label><input id="possessionUrl" type="text"><small>入力のない場合全EGO所持として計算します</small></div>
+    <details class="help-details tips-details"><summary>limbus.sharetoolのTips</summary>
+      <p>画像だけでの判別が難しい管理人は、「人格、E.G.O名を表示する」にチェックを入れてください。</p>
+      <p>継続的にこのEGO装着ツールを利用する場合は、入力したURLを控えておくのが賢明な判断です。<br>異なる人格編成を試すたびに再度所持状況を入力しなおすのは、面倒ですね。</p>
+      <p>それだけでなく、所持状況に変更があっても、控えたURLに再度アクセスすることで、続きから入力できます。<br>ただし、所持状況が入力された状態のURLを開くと、デフォルトでは所持状況の入力がロックされています。<br>「強化段階の切り替え方法：」の横にあるボタンを押すことで、ロックを解除できます。</p>
+    </details>
   </div>
   <details class="help-details" style="margin-top:18px"><summary>各種補正</summary>
     <h3 style="margin-top:14px">補正：変化</h3>
@@ -64,8 +69,8 @@ button{border:1px solid #777;border-radius:6px;padding:8px 13px;background:white
   <div id="sinnerTabs" class="sinner-tabs"></div>
   <div id="egoTableHost" class="ego-table-wrap"></div>
   <h2>生成した編成コード</h2>
+  <p class="muted">ゲーム内編成画面で<img class="instruction-button-image" src="https://raw.githubusercontent.com/394ast/limbus-EGO-Equip-Tool/main/Identities.After/Formation%20code%20button.png" alt="ボタン画像">をクリックし、「編成コードを読み込む」を選択してください。</p>
   <div class="code-actions"><textarea id="generatedCode" readonly placeholder="EGOを選択すると編成コードが表示されます"></textarea><button id="copyCodeBtn">コピー</button></div>
-  <p class="muted">ゲーム内編成画面で”ボタン画像”をクリックし、”編成コードを読み込む”を選択してください。</p>
   <div id="generationStatus" class="muted"></div>
 </section>
 </main>
