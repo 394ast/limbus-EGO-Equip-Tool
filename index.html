@@ -183,7 +183,7 @@ function bytesToBase64(bytes) {
 
 function base64ToBytes(text) {
   let normalized = text.trim();
-  if (!normalized) throw new Error("文字列が空です。");
+  if (!normalized) throw new Error("編成コードを入力してください。");
   // URL等から来た場合も扱えるようにする。
   normalized = normalized.replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
   while (normalized.length % 4 !== 0) normalized += "=";
