@@ -458,7 +458,7 @@ function buildCorrectionInputs(){
     a.innerHTML=`<label>${name}</label><input id="change-${i}" type="number" step="any" value="0" aria-label="${name}の変化">`;
     change.append(a);
     const b=document.createElement("div");b.className="attr-box";
-    b.innerHTML=`<label>${name}</label><div class="additional-frequency"><div class="attr-pair"><input id="turns-${i}" type="number" min="0" step="any" value="0" aria-label="${name}のターン数" title="ターン数"><span>ターンごとに</span></div><div class="attr-pair"><input id="count-${i}" type="number" min="0" step="any" value="0" aria-label="${name}の回数" title="回数"><span>回</span></div></div>`;
+    b.innerHTML=`<label>${name}</label><div class="additional-frequency"><div class="attr-pair"><input id="turns-${i}" type="number" min="0" step="any" value="0" aria-label="${name}のターン数" title="ターン数"><span>ターンで</span></div><div class="attr-pair"><input id="count-${i}" type="number" min="0" step="any" value="0" aria-label="${name}の回数" title="回数"><span>回</span></div></div>`;
     additional.append(b);
   });
 }
